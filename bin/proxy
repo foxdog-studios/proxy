@@ -1,0 +1,11 @@
+#!/usr/bin/env coffee
+
+program = require 'commander'
+
+program
+  .usage('[options] <server URL>')
+  .option('-p, --port', 'Proxy port', parseInt)
+  .parse process.argv
+
+require('./../build/lib/proxy').startProxy program.args[0]
+
