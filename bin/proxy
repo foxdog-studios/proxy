@@ -1,11 +1,26 @@
 #!/usr/bin/env coffee
 
 program = require 'commander'
+proxy = require '../build/lib/proxy'
 
 program
   .usage('[options] <server URL>')
-  .option('-p, --port', 'Proxy port', parseInt)
+  .option('-p, --port <n>', 'Proxy port', parseInt)
   .parse process.argv
 
-require('./../build/lib/proxy').startProxy program.args[0]
+options = {}
+options.port = program.port if program.port
+
+options.onCloseCallback = ->
+  startProxy()
+
+options.onErrorCallback = ->
+  console.log 'An error occured, restarting in 1s'
+  setTimeout startProxy, 1000
+
+startProxy = ->
+  console.log 'Starting proxy'
+  proxy.startProxy program.args[0], options
+
+startProxy()
 

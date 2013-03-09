@@ -4,7 +4,7 @@ exports.startProxy = (srvUrl, options) ->
   if not srvUrl
     throw new Error 'srvUrl not given'
 
-  proxySrv = options?.server || http.createServer()
+  proxySrv = http.createServer()
   proxySrvPort = options?.port || 8080
   clients = []
 
@@ -22,7 +22,15 @@ exports.startProxy = (srvUrl, options) ->
         client.write chunk, 'binary'
 
   srvReq.on 'close', ->
-    proxySrv.close()
+    try
+      proxySrv.close options?.onCloseCallback
+    catch err
+      if err.message != 'Not running'
+        throw err
     for client in clients
       client.end()
+
+  srvReq.on 'error', options?.onErrorCallback
+
+  srvReq.end()
 
