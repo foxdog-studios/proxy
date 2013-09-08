@@ -11,16 +11,16 @@ program
 options = {}
 options.port = program.port if program.port
 
+startProxy = ->
+  console.log 'Starting proxy'
+  proxy.startProxy program.args[0], options
+
 options.onCloseCallback = ->
   startProxy()
 
 options.onErrorCallback = ->
   console.log 'An error occured, restarting in 1s'
   setTimeout startProxy, 1000
-
-startProxy = ->
-  console.log 'Starting proxy'
-  proxy.startProxy program.args[0], options
 
 startProxy()
 
